@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
-import { RouteRecordRaw } from 'vue-router';
+import { NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
 import StartPage from '@/views/StartPage.vue';
+import { useAuthentication } from '@/composables/authentication';
+
+const { isAuthenticated } = useAuthentication();
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -30,14 +33,17 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'tab1',
         component: () => import('@/views/Tab1Page.vue'),
+        meta: { requiresAuth: true },
       },
       {
         path: 'tab2',
         component: () => import('@/views/Tab2Page.vue'),
+        meta: { requiresAuth: true },
       },
       {
         path: 'tab3',
         component: () => import('@/views/Tab3Page.vue'),
+        meta: { requiresAuth: true },
       },
     ],
   },
@@ -47,5 +53,20 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
+
+const checkAuthStatus = async (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext,
+) => {
+  if (to.matched.some((r) => r.meta.requiresAuth)) {
+    if (!(await isAuthenticated())) {
+      return next('/tabs/tab1');
+    }
+  }
+  next();
+};
+
+router.beforeEach(checkAuthStatus);
 
 export default router;
