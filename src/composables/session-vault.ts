@@ -19,7 +19,7 @@ const initializeVault = async (): Promise<void> => {
   try {
     await vault.initialize({
       key: 'io.ionic.gettingstartediv',
-      type: VaultType.SecureStorage,
+      type: VaultType.InMemory,
       deviceSecurityType: DeviceSecurityType.None,
       lockAfterBackgrounded: 2000,
     });

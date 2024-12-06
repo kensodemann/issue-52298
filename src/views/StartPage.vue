@@ -11,31 +11,19 @@ import { IonContent, IonPage, onIonViewDidEnter } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 
 const { isAuthenticated } = useAuthentication();
-const { sessionIsLocked, unlockSession } = useSessionVault();
+const { sessionIsLocked } = useSessionVault();
 const router = useRouter();
 
 const performNavigation = async (): Promise<void> => {
-  if (!(await sessionIsLocked())) {
-    if (await isAuthenticated()) {
+  if (!(await sessionIsLocked()) && (await isAuthenticated())) {
       router.replace('/tabs/tab1');
     } else {
       router.replace('/login');
     }
-  }
 };
 
-const performUnlock = async (): Promise<void> => {
-  if (await sessionIsLocked()) {
-    try {
-      await unlockSession();
-    } catch (err: unknown) {
-      router.replace('/unlock');
-    }
-  }
-};
 
 onIonViewDidEnter(async () => {
-  await performUnlock();
   await performNavigation();
 });
 </script>

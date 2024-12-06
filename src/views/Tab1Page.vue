@@ -20,22 +20,9 @@
         </ion-item>
         <ion-item>
           <ion-label>
-            <ion-button expand="block" color="secondary" @click="updateUnlockMode('BiometricsWithPasscode')"
+            <ion-button expand="block" color="secondary" @click="useBiometricsClicked"
               data-testid="use-biometrics">Use
               Biometrics</ion-button>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label>
-            <ion-button expand="block" color="secondary" @click="updateUnlockMode('InMemory')"
-              data-testid="use-in-memory">Use In Memory</ion-button>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label>
-            <ion-button expand="block" color="secondary" @click="updateUnlockMode('SecureStorage')"
-              data-testid="use-secure-storage">Use Secure
-              Storage</ion-button>
           </ion-label>
         </ion-item>
         <ion-item>
@@ -54,6 +41,7 @@
 <script setup lang="ts">
 import { useAuthentication } from '@/composables/authentication';
 import { useSessionVault } from '@/composables/session-vault';
+import { Device } from '@ionic-enterprise/identity-vault';
 import {
   IonButton,
   IonContent,
@@ -74,5 +62,12 @@ const router = useRouter();
 const logoutClicked = async (): Promise<void> => {
   await logout();
   router.replace('/');
+}
+
+const useBiometricsClicked = async():Promise<void> => {
+  try {
+    await Device.showBiometricPrompt({iosBiometricsLocalizedReason:'Just to activate'});
+    await updateUnlockMode('BiometricsWithPasscode');
+  } catch(err:unknown){null;}
 }
 </script>
